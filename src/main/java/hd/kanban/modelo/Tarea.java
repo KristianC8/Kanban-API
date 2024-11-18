@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.sql.Date;
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Entity
 @Data
@@ -23,7 +25,7 @@ public class Tarea {
     private String descripcion;
     private String estado; // To Do, In Progress, Done
     private String prioridad; // Low, Medium, High
-    private Date fechaPendiente;
+    private LocalDate fechaPendiente;
 
     @ManyToOne
     @JoinColumn(name = "proyecto_id", nullable = false)

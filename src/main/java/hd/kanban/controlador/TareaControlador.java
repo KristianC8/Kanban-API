@@ -1,5 +1,6 @@
 package hd.kanban.controlador;
 
+import hd.kanban.dto.EstadoTareaDTO;
 import hd.kanban.excepcion.RecursoNoEncontradoExcepcion;
 import hd.kanban.modelo.Tarea;
 import hd.kanban.servicio.TareaServicio;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("kanban-app")
-@CrossOrigin(value = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "http://192.168.1.36:5173", "http://192.168.1.41:5173"})
 public class TareaControlador {
     private static final Logger logger = LoggerFactory.getLogger(TareaControlador.class);
 
@@ -44,7 +45,7 @@ public class TareaControlador {
         tarea.setDescripcion(tareaRequest.descripcion);
         tarea.setEstado(tareaRequest.estado);
         tarea.setPrioridad(tareaRequest.prioridad);
-        tarea.setFechaPendiente(tareaRequest.fechaPendiente);
+        tarea.setFechaPendiente(tareaRequest.fechaPendiente.toLocalDate());
         Tarea nuevaTarea = tareaServicio.crearTarea(tarea, tareaRequest.proyectoId);
         return ResponseEntity.ok(nuevaTarea);
     }
@@ -59,6 +60,16 @@ public class TareaControlador {
         tarea.setEstado(tareaRecibida.getEstado());
         tarea.setPrioridad(tareaRecibida.getPrioridad());
         tarea.setFechaPendiente(tareaRecibida.getFechaPendiente());
+        tareaServicio.guardarTarea(tarea);
+        return ResponseEntity.ok(tarea);
+    }
+
+    @PutMapping("/estado/tareas/{id}")
+    public ResponseEntity<Tarea> ActualizarEstadoTarea(@PathVariable Integer id, @RequestBody EstadoTareaDTO estadoTarea){
+        Tarea tarea = tareaServicio.buscarTareaPorId(id);
+        if(tarea == null)
+            throw new RecursoNoEncontradoExcepcion("La tarea con id:" + id + ", No Existe");
+        tarea.setEstado(estadoTarea.getEstado());
         tareaServicio.guardarTarea(tarea);
         return ResponseEntity.ok(tarea);
     }
