@@ -64,12 +64,32 @@ public class TareaControlador {
         return ResponseEntity.ok(tarea);
     }
 
-    @PutMapping("/estado/tareas/{id}")
-    public ResponseEntity<Tarea> ActualizarEstadoTarea(@PathVariable Integer id, @RequestBody EstadoTareaDTO estadoTarea){
-        Tarea tarea = tareaServicio.buscarTareaPorId(id);
+//    @PutMapping("/estado/tareas/{id}")
+//    public ResponseEntity<Tarea> ActualizarEstadoTarea(@PathVariable Integer id, @RequestBody EstadoTareaDTO estadoTarea){
+//        Tarea tarea = tareaServicio.buscarTareaPorId(id);
+//        if(tarea == null)
+//            throw new RecursoNoEncontradoExcepcion("La tarea con id:" + id + ", No Existe");
+//        tarea.setEstado(estadoTarea.getEstado());
+//        tareaServicio.guardarTarea(tarea);
+//        return ResponseEntity.ok(tarea);
+//    }
+
+    @PatchMapping("/estado/tareas/{taskId}")
+    public ResponseEntity<?> ActualizarEstadoTarea(
+            @PathVariable Integer taskId,
+            @RequestBody Map<String, Object> updates
+    ){
+        Tarea tarea = tareaServicio.buscarTareaPorId(taskId);
         if(tarea == null)
-            throw new RecursoNoEncontradoExcepcion("La tarea con id:" + id + ", No Existe");
-        tarea.setEstado(estadoTarea.getEstado());
+            throw new RecursoNoEncontradoExcepcion("La tarea con id:" + taskId + ", No Existe");
+        // 2. Actualizar los campos especificados
+//        if (updates.containsKey("position")) {
+//            tarea.setPosition((Integer) updates.get("position"));
+//        }
+        if (updates.containsKey("estado")) {
+            tarea.setEstado((String) updates.get("estado"));
+        }
+        // 3. Guardar los cambios
         tareaServicio.guardarTarea(tarea);
         return ResponseEntity.ok(tarea);
     }
