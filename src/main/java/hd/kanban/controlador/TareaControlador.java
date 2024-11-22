@@ -30,6 +30,7 @@ public class TareaControlador {
         public String estado; // To Do, In Progress, Done
         public String prioridad; // Low, Medium, High
         public Date fechaPendiente;
+        public Integer posicion;
         public Integer proyectoId;
     }
 
@@ -46,6 +47,7 @@ public class TareaControlador {
         tarea.setEstado(tareaRequest.estado);
         tarea.setPrioridad(tareaRequest.prioridad);
         tarea.setFechaPendiente(tareaRequest.fechaPendiente.toLocalDate());
+        tarea.setPosicion(tareaRequest.posicion);
         Tarea nuevaTarea = tareaServicio.crearTarea(tarea, tareaRequest.proyectoId);
         return ResponseEntity.ok(nuevaTarea);
     }
@@ -60,6 +62,7 @@ public class TareaControlador {
         tarea.setEstado(tareaRecibida.getEstado());
         tarea.setPrioridad(tareaRecibida.getPrioridad());
         tarea.setFechaPendiente(tareaRecibida.getFechaPendiente());
+        tarea.setPosicion(tareaRecibida.getPosicion());
         tareaServicio.guardarTarea(tarea);
         return ResponseEntity.ok(tarea);
     }
@@ -83,9 +86,9 @@ public class TareaControlador {
         if(tarea == null)
             throw new RecursoNoEncontradoExcepcion("La tarea con id:" + taskId + ", No Existe");
         // 2. Actualizar los campos especificados
-//        if (updates.containsKey("position")) {
-//            tarea.setPosition((Integer) updates.get("position"));
-//        }
+        if (updates.containsKey("posicion")) {
+            tarea.setPosicion((Integer) updates.get("posicion"));
+        }
         if (updates.containsKey("estado")) {
             tarea.setEstado((String) updates.get("estado"));
         }

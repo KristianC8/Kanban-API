@@ -26,6 +26,7 @@ public class Tarea {
     private String estado; // To Do, In Progress, Done
     private String prioridad; // Low, Medium, High
     private LocalDate fechaPendiente;
+    private Integer posicion;
 
     @ManyToOne
     @JoinColumn(name = "proyecto_id", nullable = false)
