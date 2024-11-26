@@ -1,6 +1,7 @@
 package hd.kanban.controlador;
 
 import hd.kanban.dto.EstadoTareaDTO;
+import hd.kanban.dto.MoverTareaDTO;
 import hd.kanban.excepcion.RecursoNoEncontradoExcepcion;
 import hd.kanban.modelo.Tarea;
 import hd.kanban.servicio.TareaServicio;
@@ -30,7 +31,7 @@ public class TareaControlador {
         public String estado; // To Do, In Progress, Done
         public String prioridad; // Low, Medium, High
         public Date fechaPendiente;
-        public Integer posicion;
+        public Double posicion;
         public Integer proyectoId;
     }
 
@@ -87,7 +88,7 @@ public class TareaControlador {
             throw new RecursoNoEncontradoExcepcion("La tarea con id:" + taskId + ", No Existe");
         // 2. Actualizar los campos especificados
         if (updates.containsKey("posicion")) {
-            tarea.setPosicion((Integer) updates.get("posicion"));
+            tarea.setPosicion((Double) updates.get("posicion"));
         }
         if (updates.containsKey("estado")) {
             tarea.setEstado((String) updates.get("estado"));
@@ -106,6 +107,21 @@ public class TareaControlador {
         Map<String, Boolean> respuesta = new HashMap<>();
         respuesta.put("eliminado", Boolean.TRUE);
         return ResponseEntity.ok(respuesta);
+    }
+
+    // Mover tarea entre columnas
+    @PostMapping("/mover")
+    public ResponseEntity<Void> moverTarea(
+            @RequestBody MoverTareaDTO mover) {
+        tareaServicio.moverTarea(mover.getIdTarea(), mover.getNuevoEstado(), mover.getNuevaPosicion());
+        return ResponseEntity.ok().build();
+    }
+
+    // Reorganizar posiciones en una columna
+    @PostMapping("/reorganizar")
+    public ResponseEntity<Void> reorganizar(@RequestBody EstadoTareaDTO estado) {
+        tareaServicio.reorganizarPosiciones(estado.getEstado());
+        return ResponseEntity.ok().build();
     }
 
 }

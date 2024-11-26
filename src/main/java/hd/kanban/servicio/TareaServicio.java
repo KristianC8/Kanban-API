@@ -4,6 +4,7 @@ import hd.kanban.excepcion.RecursoNoEncontradoExcepcion;
 import hd.kanban.modelo.Proyecto;
 import hd.kanban.modelo.Tarea;
 import hd.kanban.repositorio.TareaRepositorio;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,4 +50,38 @@ public class TareaServicio implements ITareaServicio {
     public void eliminarTarea(Tarea tarea) {
         tareaRepositorio.delete(tarea);
     }
+
+    @Override
+    @Transactional
+    public void moverTarea(Integer idTarea, String nuevoEstado, Double nuevaPosicion) {
+        Tarea tarea = tareaRepositorio.findById(idTarea)
+                .orElseThrow(() -> new RuntimeException("Tarea no encontrada"));
+
+        // Actualizar posiciones en la columna de origen
+        tareaRepositorio.actualizarPosicionesColumnaOrigen(tarea.getEstado(), tarea.getPosicion());
+
+        // Calcular nueva posición en la columna de destino si no se proporciona
+        if (nuevaPosicion == null) {
+            nuevaPosicion = tareaRepositorio.obtenerNuevaPosicionFinal(nuevoEstado);
+        }
+
+        // Actualizar el estado y la posición de la tarea
+        tarea.setEstado(nuevoEstado);
+        tarea.setPosicion(nuevaPosicion);
+        tareaRepositorio.save(tarea);
+    }
+
+    @Override
+    @Transactional
+    public void reorganizarPosiciones(String estado) {
+        List<Tarea> tareas = tareaRepositorio.findByEstadoOrderByPosicion(estado);
+
+        // Reorganizar posiciones asignando enteros consecutivos
+        for (int i = 0; i < tareas.size(); i++) {
+            tareas.get(i).setPosicion((double) (i + 1));
+        }
+
+        tareaRepositorio.saveAll(tareas);
+    }
+
 }

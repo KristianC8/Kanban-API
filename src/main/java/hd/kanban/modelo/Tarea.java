@@ -3,19 +3,18 @@ package hd.kanban.modelo;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.text.DateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
+@Table(name = "tareas")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString
 public class Tarea {
     @Id
@@ -26,7 +25,7 @@ public class Tarea {
     private String estado; // To Do, In Progress, Done
     private String prioridad; // Low, Medium, High
     private LocalDate fechaPendiente;
-    private Integer posicion;
+    private Double posicion;
 
     @ManyToOne
     @JoinColumn(name = "proyecto_id", nullable = false)

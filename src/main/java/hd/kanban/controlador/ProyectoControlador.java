@@ -3,6 +3,7 @@ package hd.kanban.controlador;
 import hd.kanban.excepcion.RecursoNoEncontradoExcepcion;
 import hd.kanban.modelo.Proyecto;
 import hd.kanban.servicio.ProyectoServicio;
+import hd.kanban.servicio.TareaServicio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class ProyectoControlador {
     @Autowired
     private ProyectoServicio proyectoServicio;
 
+//    @Autowired
+//    private TareaServicio tareaServicio;
+
     @GetMapping("/proyectos")
     public List<Proyecto> obteberProyectos(){
         var proyectos = proyectoServicio.listarProyectos();
@@ -32,6 +36,9 @@ public class ProyectoControlador {
 
     @GetMapping("proyectos/{id}")
     public ResponseEntity<Proyecto> ObtenerProyectoPorId(@PathVariable Integer id){
+//        tareaServicio.reorganizarPosiciones("todo");
+//        tareaServicio.reorganizarPosiciones("inProgress");
+//        tareaServicio.reorganizarPosiciones("done");
         Proyecto proyecto  =  proyectoServicio.buscarProyectoPorId(id);
         if(proyecto == null)
             throw new RecursoNoEncontradoExcepcion("Proyecto con el id: " + id +  ", No existe");

@@ -11,6 +11,7 @@ import org.springframework.scheduling.config.Task;
 import java.util.List;
 
 @Entity
+@Table(name = "proyectos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

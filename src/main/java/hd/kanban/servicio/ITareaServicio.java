@@ -15,4 +15,8 @@ public interface ITareaServicio {
     public Tarea buscarTareaPorId(Integer tareaId);
 
     public void  eliminarTarea(Tarea tarea);
+
+    public void moverTarea(Integer idTarea, String nuevoEstado, Double nuevaPosicion);
+
+    public void reorganizarPosiciones(String estado);
 }
