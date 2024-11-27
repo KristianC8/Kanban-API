@@ -47,7 +47,9 @@ public class TareaServicio implements ITareaServicio {
     }
 
     @Override
+    @Transactional
     public void eliminarTarea(Tarea tarea) {
+        tareaRepositorio.actualizarPosicionesColumnaOrigen(tarea.getEstado(), tarea.getPosicion());
         tareaRepositorio.delete(tarea);
     }
 
@@ -82,6 +84,12 @@ public class TareaServicio implements ITareaServicio {
         }
 
         tareaRepositorio.saveAll(tareas);
+    }
+
+    @Override
+    @Transactional
+    public void actualizarPosicionesOrigen(String estado, Double posicion){
+        tareaRepositorio.actualizarPosicionesColumnaOrigen(estado, posicion);
     }
 
 }

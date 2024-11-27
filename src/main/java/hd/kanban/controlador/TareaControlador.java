@@ -58,6 +58,7 @@ public class TareaControlador {
         Tarea tarea = tareaServicio.buscarTareaPorId(id);
         if(tarea == null)
             throw new RecursoNoEncontradoExcepcion("La tarea con id:" + id + ", No Existe");
+        tareaServicio.actualizarPosicionesOrigen(tarea.getEstado(), tarea.getPosicion());
         tarea.setTitulo(tareaRecibida.getTitulo());
         tarea.setDescripcion(tareaRecibida.getDescripcion());
         tarea.setEstado(tareaRecibida.getEstado());
@@ -87,8 +88,17 @@ public class TareaControlador {
         if(tarea == null)
             throw new RecursoNoEncontradoExcepcion("La tarea con id:" + taskId + ", No Existe");
         // 2. Actualizar los campos especificados
+//        if (updates.containsKey("posicion")) {
+//            tarea.setPosicion((Double) updates.get("posicion"));
+//        }
+        tareaServicio.actualizarPosicionesOrigen(tarea.getEstado(), tarea.getPosicion());
         if (updates.containsKey("posicion")) {
-            tarea.setPosicion((Double) updates.get("posicion"));
+            Object posicionObj = updates.get("posicion");
+            if (posicionObj instanceof Number) {
+                tarea.setPosicion(((Number) posicionObj).doubleValue());
+            } else {
+                throw new IllegalArgumentException("El valor de 'posicion' debe ser un número.");
+            }
         }
         if (updates.containsKey("estado")) {
             tarea.setEstado((String) updates.get("estado"));

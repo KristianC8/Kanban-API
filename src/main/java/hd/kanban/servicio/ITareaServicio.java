@@ -19,4 +19,6 @@ public interface ITareaServicio {
     public void moverTarea(Integer idTarea, String nuevoEstado, Double nuevaPosicion);
 
     public void reorganizarPosiciones(String estado);
+
+    public void actualizarPosicionesOrigen(String estado, Double posicion);
 }
