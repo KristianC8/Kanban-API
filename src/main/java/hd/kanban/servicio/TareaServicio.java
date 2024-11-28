@@ -19,6 +19,9 @@ public class TareaServicio implements ITareaServicio {
     @Autowired
     private ProyectoServicio proyectoServicio;
 
+    //Umbral para reorganizar cuando detectamos más de 3 decimales
+    private static final int MAX_DECIMALES_PERMITIDOS = 3;
+
     @Override
     public List<Tarea> ListarTareasPorProyecto(Integer proyectoId) {
         List<Tarea> tareas = tareaRepositorio.findByProyectoId(proyectoId);
@@ -67,10 +70,21 @@ public class TareaServicio implements ITareaServicio {
             nuevaPosicion = tareaRepositorio.obtenerNuevaPosicionFinal(nuevoEstado);
         }
 
+        String estadoActual = tarea.getEstado();
         // Actualizar el estado y la posición de la tarea
         tarea.setEstado(nuevoEstado);
         tarea.setPosicion(nuevaPosicion);
         tareaRepositorio.save(tarea);
+
+        // Si el cambio de estado requiere reorganización
+//        if (!estadoActual.equals(nuevoEstado)) {
+//            reorganizarPosiciones(estadoActual); // Reorganizar la columna anterior
+//        }
+
+        // Comprobar si hay que reorganizar la nueva columna
+        if (necesitaReorganizacion(nuevoEstado)) {
+            reorganizarPosiciones(nuevoEstado); // Reorganizar la columna actual
+        }
     }
 
     @Override
@@ -90,6 +104,25 @@ public class TareaServicio implements ITareaServicio {
     @Transactional
     public void actualizarPosicionesOrigen(String estado, Double posicion){
         tareaRepositorio.actualizarPosicionesColumnaOrigen(estado, posicion);
+    }
+
+    private boolean necesitaReorganizacion(String estado) {
+        List<Tarea> tareas = tareaRepositorio.findByEstadoOrderByPosicion(estado);
+        for (Tarea tarea : tareas) {
+            if (tieneDemasiadosDecimales(tarea.getPosicion())) {
+                return true;  // Se detectaron demasiados decimales, es necesario reorganizar
+            }
+        }
+        return false;  // No es necesario reorganizar
+    }
+
+    private boolean tieneDemasiadosDecimales(double posicion) {
+        String[] partes = String.valueOf(posicion).split("\\.");
+        if (partes.length > 1) {
+            String decimales = partes[1];
+            return decimales.length() > MAX_DECIMALES_PERMITIDOS;
+        }
+        return false;
     }
 
 }

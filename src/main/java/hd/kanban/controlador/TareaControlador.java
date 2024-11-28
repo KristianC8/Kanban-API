@@ -121,10 +121,13 @@ public class TareaControlador {
 
     // Mover tarea entre columnas
     @PostMapping("/mover")
-    public ResponseEntity<Void> moverTarea(
+    public ResponseEntity<Map<String, Boolean>> moverTarea(
             @RequestBody MoverTareaDTO mover) {
         tareaServicio.moverTarea(mover.getIdTarea(), mover.getNuevoEstado(), mover.getNuevaPosicion());
-        return ResponseEntity.ok().build();
+//        return ResponseEntity.ok().build();
+        Map<String, Boolean> respuesta = new HashMap<>();
+        respuesta.put("Moved", Boolean.TRUE);
+        return ResponseEntity.ok(respuesta);
     }
 
     // Reorganizar posiciones en una columna
