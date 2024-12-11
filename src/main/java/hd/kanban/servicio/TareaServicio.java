@@ -20,9 +20,10 @@ public class TareaServicio implements ITareaServicio {
     private ProyectoServicio proyectoServicio;
 
     //Umbral para reorganizar cuando detectamos más de 3 decimales
-    private static final int MAX_DECIMALES_PERMITIDOS = 3;
+    //private static final int MAX_DECIMALES_PERMITIDOS = 2;
 
     @Override
+    @Transactional
     public List<Tarea> ListarTareasPorProyecto(Integer proyectoId) {
         List<Tarea> tareas = tareaRepositorio.findByProyectoId(proyectoId);
         if (tareas == null || tareas.isEmpty())
@@ -31,6 +32,7 @@ public class TareaServicio implements ITareaServicio {
     }
 
     @Override
+    @Transactional
     public Tarea crearTarea(Tarea tarea, Integer proyectoId) {
         Proyecto proyecto = proyectoServicio.buscarProyectoPorId(proyectoId);
         if(proyecto == null)
@@ -40,11 +42,13 @@ public class TareaServicio implements ITareaServicio {
     }
 
     @Override
+    @Transactional
     public Tarea guardarTarea(Tarea tarea) {
         return  tareaRepositorio.save(tarea);
     }
 
     @Override
+    @Transactional
     public Tarea buscarTareaPorId(Integer tareaId) {
         return tareaRepositorio.findById(tareaId).orElse(null);
     }
@@ -75,14 +79,9 @@ public class TareaServicio implements ITareaServicio {
         tarea.setEstado(nuevoEstado);
         tarea.setPosicion(nuevaPosicion);
         tareaRepositorio.save(tarea);
+        tareaRepositorio.actualizarPosicionesColumnaDestino(nuevoEstado, nuevaPosicion, tarea.getId());
 
-        // Si el cambio de estado requiere reorganización
-//        if (!estadoActual.equals(nuevoEstado)) {
-//            reorganizarPosiciones(estadoActual); // Reorganizar la columna anterior
-//        }
-
-        // Comprobar si hay que reorganizar la nueva columna
-        if (necesitaReorganizacion(nuevoEstado)) {
+        if (nuevaPosicion == 0 || nuevaPosicion < 0) {
             reorganizarPosiciones(nuevoEstado); // Reorganizar la columna actual
         }
     }
@@ -106,23 +105,29 @@ public class TareaServicio implements ITareaServicio {
         tareaRepositorio.actualizarPosicionesColumnaOrigen(estado, posicion);
     }
 
-    private boolean necesitaReorganizacion(String estado) {
-        List<Tarea> tareas = tareaRepositorio.findByEstadoOrderByPosicion(estado);
-        for (Tarea tarea : tareas) {
-            if (tieneDemasiadosDecimales(tarea.getPosicion())) {
-                return true;  // Se detectaron demasiados decimales, es necesario reorganizar
-            }
-        }
-        return false;  // No es necesario reorganizar
+    @Override
+    @Transactional
+    public void actualizarPosicionesDestino(String estado, Double posicion, Integer id) {
+        tareaRepositorio.actualizarPosicionesColumnaDestino(estado, posicion, id);
     }
 
-    private boolean tieneDemasiadosDecimales(double posicion) {
-        String[] partes = String.valueOf(posicion).split("\\.");
-        if (partes.length > 1) {
-            String decimales = partes[1];
-            return decimales.length() > MAX_DECIMALES_PERMITIDOS;
-        }
-        return false;
-    }
+//    private boolean necesitaReorganizacion(String estado) {
+//        List<Tarea> tareas = tareaRepositorio.findByEstadoOrderByPosicion(estado);
+//        for (Tarea tarea : tareas) {
+//            if (tieneDemasiadosDecimales(tarea.getPosicion())) {
+//                return true;  // Se detectaron demasiados decimales, es necesario reorganizar
+//            }
+//        }
+//        return false;  // No es necesario reorganizar
+//    }
+
+//    private boolean tieneDemasiadosDecimales(double posicion) {
+//        String[] partes = String.valueOf(posicion).split("\\.");
+//        if (partes.length > 1) {
+//            String decimales = partes[1];
+//            return decimales.length() >= MAX_DECIMALES_PERMITIDOS;
+//        }
+//        return false;
+//    }
 
 }

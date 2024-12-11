@@ -19,6 +19,11 @@ public interface TareaRepositorio extends JpaRepository<Tarea, Integer> {
     @Query("UPDATE Tarea t SET t.posicion = t.posicion - 1 WHERE t.estado = :estado AND t.posicion > :posicion")
     void actualizarPosicionesColumnaOrigen(@Param("estado") String estado, @Param("posicion") double posicion);
 
+    // Aumentar posiciones mayores en la columna de destino
+    @Modifying
+    @Query("UPDATE Tarea t SET t.posicion = t.posicion + 1 WHERE t.estado = :estado AND t.posicion >= :posicion AND t.id <> :id")
+    void actualizarPosicionesColumnaDestino(@Param("estado") String estado, @Param("posicion") double posicion, @Param("id") Integer id);
+
     // Obtener la posición máxima en la columna de destino
     @Query("SELECT COALESCE(MAX(t.posicion), 0) + 1 FROM Tarea t WHERE t.estado = :estado")
     double obtenerNuevaPosicionFinal(@Param("estado") String estado);

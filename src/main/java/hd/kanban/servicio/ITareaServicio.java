@@ -21,4 +21,6 @@ public interface ITareaServicio {
     public void reorganizarPosiciones(String estado);
 
     public void actualizarPosicionesOrigen(String estado, Double posicion);
+
+    public void actualizarPosicionesDestino(String estado, Double posicion, Integer id );
 }
