@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 //http:localhost:8080/kanban-app/
 @RequestMapping("kanban-app")
-@CrossOrigin(value = "http://localhost:5173")
+@CrossOrigin(origins = {"http://localhost:5173", "https://kanban-app-front.vercel.app/"})
 public class ProyectoControlador {
     private static final Logger logger = LoggerFactory.getLogger(ProyectoControlador.class);
 
